@@ -16,40 +16,34 @@ const constructorSlice = createSlice({
   initialState,
   reducers: {
     addIngredient: (state, action: PayloadAction<TIngredient>) => {
-      const ingredient = {
+      const newIngredient: TConstructorIngredient = {
         ...action.payload,
-        id: crypto.randomUUID()
+        id: Date.now().toString()
       };
-      if (ingredient.type === 'bun') {
-        state.bun = ingredient;
+
+      if (newIngredient.type === 'bun') {
+        state.bun = newIngredient;
       } else {
-        // ГАРАНТИЯ: убеждаемся, что ingredients — это массив
-        if (!state.ingredients) {
-          state.ingredients = [];
-        }
-        state.ingredients.push(ingredient);
+        state.ingredients.push(newIngredient);
       }
     },
     removeIngredient: (state, action: PayloadAction<string>) => {
-      if (state.ingredients) {
-        state.ingredients = state.ingredients.filter(
-          (item) => item.id !== action.payload
-        );
-      }
+      state.ingredients = state.ingredients.filter(
+        (item) => item.id !== action.payload
+      );
     },
     moveIngredient: (
       state,
       action: PayloadAction<{ from: number; to: number }>
     ) => {
-      if (state.ingredients && state.ingredients.length > 0) {
-        const { from, to } = action.payload;
-        const ingredients = [...state.ingredients];
-        const [movedItem] = ingredients.splice(from, 1);
-        ingredients.splice(to, 0, movedItem);
-        state.ingredients = ingredients;
-      }
+      const { from, to } = action.payload;
+      const [movedItem] = state.ingredients.splice(from, 1);
+      state.ingredients.splice(to, 0, movedItem);
     },
-    clearConstructor: () => initialState
+    clearConstructor: (state) => {
+      state.bun = null;
+      state.ingredients = [];
+    }
   }
 });
 
@@ -59,4 +53,5 @@ export const {
   moveIngredient,
   clearConstructor
 } = constructorSlice.actions;
+
 export default constructorSlice.reducer;

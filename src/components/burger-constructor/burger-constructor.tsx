@@ -10,7 +10,7 @@ export const BurgerConstructor: FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { bun, ingredients } = useSelector((state) => state.constructor);
+  const { bun, ingredients } = useSelector((state) => state.burgerConstructor);
   const { user } = useSelector((state) => state.user);
   const {
     orderNumber,
@@ -41,12 +41,15 @@ export const BurgerConstructor: FC = () => {
       constructorItems.bun._id
     ];
 
-    dispatch(createOrder(ingredientsIds));
+    dispatch(createOrder(ingredientsIds)).then((result) => {
+      if (result.type === 'order/createOrder/fulfilled') {
+        dispatch(clearConstructor());
+      }
+    });
   };
 
   const closeOrderModal = () => {
     dispatch(clearOrder());
-    dispatch(clearConstructor());
   };
 
   const price = useMemo(

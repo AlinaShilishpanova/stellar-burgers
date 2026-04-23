@@ -106,11 +106,13 @@ const userSlice = createSlice({
         state.isLoading = false;
         state.user = action.payload;
         state.isAuthChecked = true;
+        state.error = null;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message || 'Ошибка входа';
         state.isAuthChecked = true;
+        state.user = null;
       })
       // Register
       .addCase(registerUser.pending, (state) => {
@@ -121,38 +123,88 @@ const userSlice = createSlice({
         state.isLoading = false;
         state.user = action.payload;
         state.isAuthChecked = true;
+        state.error = null;
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message || 'Ошибка регистрации';
         state.isAuthChecked = true;
+        state.user = null;
       })
       // Fetch user
       .addCase(fetchUser.pending, (state) => {
         state.isLoading = true;
+        state.error = null;
       })
       .addCase(fetchUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload;
         state.isAuthChecked = true;
+        state.error = null;
       })
-      .addCase(fetchUser.rejected, (state) => {
+      .addCase(fetchUser.rejected, (state, action) => {
         state.isLoading = false;
         state.isAuthChecked = true;
+        state.user = null;
+        state.error = action.error.message || 'Ошибка загрузки пользователя';
       })
       // Update user
+      .addCase(updateUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
       .addCase(updateUser.fulfilled, (state, action) => {
+        state.isLoading = false;
         state.user = action.payload;
+        state.error = null;
+      })
+      .addCase(updateUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message || 'Ошибка обновления данных';
       })
       // Logout
-      .addCase(logout.fulfilled, () => initialState)
+      .addCase(logout.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(logout.fulfilled, (state) => {
+        state.user = null;
+        state.isAuthChecked = true;
+        state.isLoading = false;
+        state.error = null;
+        state.passwordResetRequested = false;
+      })
+      .addCase(logout.rejected, (state) => {
+        state.isLoading = false;
+        state.isAuthChecked = true;
+        state.user = null;
+      })
       // Forgot password
+      .addCase(forgotPassword.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
       .addCase(forgotPassword.fulfilled, (state) => {
+        state.isLoading = false;
         state.passwordResetRequested = true;
+        state.error = null;
+      })
+      .addCase(forgotPassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message || 'Ошибка восстановления пароля';
       })
       // Reset password
+      .addCase(resetPassword.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
       .addCase(resetPassword.fulfilled, (state) => {
+        state.isLoading = false;
         state.passwordResetRequested = false;
+        state.error = null;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message || 'Ошибка сброса пароля';
       });
   }
 });

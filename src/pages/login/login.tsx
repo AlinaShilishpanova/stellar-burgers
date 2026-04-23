@@ -7,16 +7,19 @@ import { loginUser } from '../../services/slices/userSlice';
 export const Login: FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { error, user } = useSelector((state) => state.user);
+  const { error } = useSelector((state) => state.user);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e: SyntheticEvent) => {
+  const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
-    dispatch(loginUser({ email, password })).then(() => {
+
+    const result = await dispatch(loginUser({ email, password }));
+
+    if (loginUser.fulfilled.match(result)) {
       navigate('/');
-    });
+    }
   };
 
   return (
