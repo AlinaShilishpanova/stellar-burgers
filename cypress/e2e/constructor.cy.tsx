@@ -1,5 +1,7 @@
 /// <reference types="cypress" />
 
+/// <reference types="cypress" />
+
 describe('Конструктор бургера', () => {
   beforeEach(() => {
     cy.intercept('GET', 'api/ingredients', { fixture: 'ingredients.json' });
@@ -10,9 +12,10 @@ describe('Конструктор бургера', () => {
     cy.contains('Соберите бургер').should('be.visible');
   });
 
-  it('добавляет ингредиент в конструктор', () => {
+  it('добавляет булку в конструктор', () => {
+    cy.get('[data-cy="constructor"] [class*="constructor-element"]').should('have.length', 0);
     cy.contains('Добавить').first().click({ force: true });
-    cy.get('[data-cy="constructor"]').should('exist');
+    cy.get('[data-cy="constructor"] [class*="constructor-element"]').should('have.length.at.least', 1);
   });
 
   it('открывает модальное окно ингредиента', () => {
@@ -50,13 +53,17 @@ describe('Конструктор бургера', () => {
     cy.get('[data-cy="ingredient"]', { timeout: 10000 }).should('exist');
 
     cy.contains('Добавить').first().click({ force: true });
-    cy.get('[data-cy="constructor"]').should('exist');
+    
+    cy.get('[data-cy="constructor"] [class*="constructor-element"]').should('have.length.at.least', 1);
 
     cy.get('[data-cy="order-button"]').click();
 
     cy.get('[data-cy="modal"]', { timeout: 10000 }).should('be.visible');
     cy.contains('12345').should('be.visible');
+    
     cy.get('[data-cy="close-icon"]').click();
     cy.get('[data-cy="modal"]').should('not.exist');
+
+    cy.get('[data-cy="constructor"] [class*="constructor-element"]').should('have.length', 0);
   });
 });
